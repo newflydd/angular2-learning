@@ -1,13 +1,33 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+import { Jsonp,URLSearchParams } from '@angular/http';
+
+import { WikiSearchEntity } from '../entity/wikisearch.entity';
 
 @Injectable()
 export class WikiSearchService{
-    private url = 'http://en.wikipedia.org/w/api.php';
+    constructor(private jsonp : Jsonp){}
 
-    constructor(private http : Http){}
+    getSearchResults(word : string, languageEN : boolean) : Promise<WikiSearchEntity[]>{
+        let url = `http://${languageEN?'en':'zh'}.wikipedia.org/w/api.php`;
+        let params = new URLSearchParams();
+        params.set('search', word); // the user's search value
+        params.set('action', 'opensearch');
+        params.set('format', 'json');
+        params.set('callback', 'JSONP_CALLBACK');
 
-    getSearchResults(word : string) : Promise<string[]>{
-        return null;
+        return this.jsonp.get(url, {search : params})
+            .map(response =>  {
+                let json = response.json();
+                let size = json[1].length;
+                let results : WikiSearchEntity[] = new Array();
+
+                for(let i = 0; i < size; i++){
+                    let wse : WikiSearchEntity = new WikiSearchEntity(json[1][i], json[2][i], json[3][i]);
+                    results.push(wse);
+                }
+
+                return results;
+            })
+            .toPromise();
     }
 }

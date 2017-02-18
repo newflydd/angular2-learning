@@ -1,0 +1,14 @@
+<div style="margin:10px;">
+    <h1>Search in Wiki:</h1>
+    <span class='tg-list-item'>
+        <input class='tgl tgl-flip' id='cb5' type='checkbox' #inputLanguage (click)="onLanguageChange(inputLanguage.checked)">
+        <label class='tgl-btn' data-tg-off='中文' data-tg-on='英文' for='cb5'></label>
+    </span>
+    <input #inputWord (keyup)="onSearch(inputWord.value)">
+    <button class="btn btn-primary">Test</button>
+    <ul>
+        <li *ngFor="let result of results">
+            <a [href]="result.url" [title]="result.description" target="_blank"> {{result.words}}</a>
+        </li>
+    </ul>
+<div>

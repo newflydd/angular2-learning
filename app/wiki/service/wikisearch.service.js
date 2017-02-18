@@ -10,17 +10,34 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require('@angular/core');
 var http_1 = require('@angular/http');
+var wikisearch_entity_1 = require('../entity/wikisearch.entity');
 var WikiSearchService = (function () {
-    function WikiSearchService(http) {
-        this.http = http;
-        this.url = 'http://en.wikipedia.org/w/api.php';
+    function WikiSearchService(jsonp) {
+        this.jsonp = jsonp;
     }
-    WikiSearchService.prototype.getSearchResults = function (word) {
-        return null;
+    WikiSearchService.prototype.getSearchResults = function (word, languageEN) {
+        var url = "http://" + (languageEN ? 'en' : 'zh') + ".wikipedia.org/w/api.php";
+        var params = new http_1.URLSearchParams();
+        params.set('search', word); // the user's search value
+        params.set('action', 'opensearch');
+        params.set('format', 'json');
+        params.set('callback', 'JSONP_CALLBACK');
+        return this.jsonp.get(url, { search: params })
+            .map(function (response) {
+            var json = response.json();
+            var size = json[1].length;
+            var results = new Array();
+            for (var i = 0; i < size; i++) {
+                var wse = new wikisearch_entity_1.WikiSearchEntity(json[1][i], json[2][i], json[3][i]);
+                results.push(wse);
+            }
+            return results;
+        })
+            .toPromise();
     };
     WikiSearchService = __decorate([
         core_1.Injectable(), 
-        __metadata('design:paramtypes', [http_1.Http])
+        __metadata('design:paramtypes', [http_1.Jsonp])
     ], WikiSearchService);
     return WikiSearchService;
 }());

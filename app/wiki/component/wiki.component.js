@@ -9,15 +9,36 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require('@angular/core');
+var Subject_1 = require('rxjs/Subject');
+var wikisearch_service_1 = require('../service/wikisearch.service');
 var WikiComponent = (function () {
-    function WikiComponent() {
+    function WikiComponent(wikiSearchService) {
+        var _this = this;
+        this.wikiSearchService = wikiSearchService;
+        this.searchWordsStream = new Subject_1.Subject();
+        this.languageEN = false;
+        this.searchWordsStream
+            .debounceTime(300) //防抖动时间
+            .distinctUntilChanged() //去除连续重复的
+            .forEach(function (words) { return _this.wikiSearchService.getSearchResults(words, _this.languageEN).then(function (results) { return _this.results = results; }); });
     }
+    WikiComponent.prototype.onSearch = function (word) {
+        if (word == null || "" == word)
+            return;
+        this.searchWordsStream.next(word);
+    };
+    WikiComponent.prototype.onLanguageChange = function (checked) {
+        this.languageEN = checked;
+    };
     WikiComponent = __decorate([
         core_1.Component({
-            template: "\n    \t<div style=\"margin:10px;\">\n\t        <h1>Search in Wiki:</h1>\n\t        <input >\n\t        <button class=\"btn btn-primary\">Test</button>\n\t        <ul>\n\t\t\t\t<li *ngFor=\"let result of results\">{{result}}</li>\n\t        </ul>\n        <div>\n    ",
+            moduleId: module.id,
             selector: 'my-app',
+            providers: [wikisearch_service_1.WikiSearchService],
+            templateUrl: '../html/wiki.html',
+            styleUrls: ['../style/wiki.css']
         }), 
-        __metadata('design:paramtypes', [])
+        __metadata('design:paramtypes', [wikisearch_service_1.WikiSearchService])
     ], WikiComponent);
     return WikiComponent;
 }());
