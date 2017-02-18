@@ -8,7 +8,7 @@ export class WikiSearchService{
     constructor(private jsonp : Jsonp){}
 
     getSearchResults(word : string, languageEN : boolean) : Promise<WikiSearchEntity[]>{
-        let url = `http://${ languageEN ? 'en' : 'zh'}.wikipedia.org/w/api.php`;
+        let url = `https://${ languageEN ? 'en' : 'zh'}.wikipedia.org/w/api.php`;
         let params = new URLSearchParams();
         params.set('search', word); // the user's search value
         params.set('action', 'opensearch');

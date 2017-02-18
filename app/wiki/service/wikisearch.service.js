@@ -16,7 +16,7 @@ var WikiSearchService = (function () {
         this.jsonp = jsonp;
     }
     WikiSearchService.prototype.getSearchResults = function (word, languageEN) {
-        var url = "http://" + (languageEN ? 'en' : 'zh') + ".wikipedia.org/w/api.php";
+        var url = "https://" + (languageEN ? 'en' : 'zh') + ".wikipedia.org/w/api.php";
         var params = new http_1.URLSearchParams();
         params.set('search', word); // the user's search value
         params.set('action', 'opensearch');
